@@ -2,56 +2,79 @@
 <html>
 <head>
 <!--jQuery dependencies-->
-    <script src="https://unpkg.com/jquery@2.2.4/dist/jquery.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
 <!--PQ Grid files-->
     <link rel="stylesheet" href="pqgrid.min.css" />
     <link rel="stylesheet" href="pqgrid.ui.min.css" />
-    
-    <script src="pqgrid.dev.js"></script>
-
-<!--jqueryui touch punch for touch devices-->
-    <script src="touch-punch/touch-punch.min.js"></script>
-
-<!--PQ Grid Office theme-->
+    <!--office theme-->
     <link rel='stylesheet' href='themes/office/pqgrid.css' />
 
-<!--jsZip for zip and xlsx export-->
+    <script src="pqgrid.min.js"></script>
+    <!--for localization and intellisense -->
+    <script src="localize/pq-localize-en.js"></script>
+
+<!--for touch devices-->
+    <script src="pqTouch/pqtouch.min.js"></script>
+
+<!--jsZip for zip and xlsx import/export-->
     <script src="jsZip-2.5.0/jszip.min.js"></script>
+
 <style>
     *{
         font-size:12px;
         font-family: Arial;
     }
+
+	.errorStyle {
+		background-color: red !important;
+		color: white;
+	}
+
+	#pq-head-cell-u0-0-0-left div.pq-td-div,#pq-head-cell-u0-0-1-left div.pq-td-div {line-height:56px !important} 
+	#pq-head-cell-u0-0-2-right div.pq-td-div {height:28px !important} 
+	/*
+	#grid_array .pq-grid-top {display:none}
+	*/
+	/*
+	.pq-grid-row[pq-row-indx="0"] .pq-grid-cell[pq-col-indx="1"] {
+		background-color: red;
+		color: white;
+	}
+	*/
 </style>
 <script>
     $(function () {
-        var data = [[1, 'Exxon Mobil', '339938.0', '36130.0'],
-            [2, 'Wal-Mart Stores', '315654.0', '11231.0'],
-            [3, 'Royal Dutch Shell', '306731.0', '25311.0'],
-            [4, 'BP', '267600.0', '22341.0'],
-            [5, 'General Motors', '192604.0', '-10567.0'],
-            [6, 'Chevron', '189481.0', '14099.0'],
-            [7, 'DaimlerChrysler', '186106.3', '3536.3'],
-            [8, 'Toyota Motor', '185805.0', '12119.6'],
-            [9, 'Ford Motor', '177210.0', '2024.0'],
-            [10, 'ConocoPhillips', '166683.0', '13529.0'],
-            [11, 'General Electric', '157153.0', '16353.0'],
-            [12, 'Total', '152360.7', '15250.0'],
-            [13, 'ING Group', '138235.3', '8958.9'],
-            [14, 'Citigroup', '131045.0', '24589.0'],
-            [15, 'AXA', '129839.2', '5186.5'],
-            [16, 'Allianz', '121406.0', '5442.4'],
-            [17, 'Volkswagen', '118376.6', '1391.7'],
-            [18, 'Fortis', '112351.4', '4896.3'],
-            [19, 'Crédit Agricole', '110764.6', '7434.3'],
-            [20, 'American Intl. Group', '108905.0', '10477.0']];
+        var data = [
+            [1, 'Exxon Mobil', 339938.0, 36130.0],
+            [2, 'Wal-Mart Stores', 315654.0, 11231.0],
+            [3, 'Royal Dutch Shell', 306731.0, 25311.0],
+            [4, 'BP', 267600.0, 22341.0],
+            [5, 'General Motors', 192604.0, -10567.0],
+            [6, 'Chevron', 189481.0, 14099.0],
+            [7, 'DaimlerChrysler', 186106.3, 3536.3],
+            [8, 'Toyota Motor', 185805.0, 12119.6],
+            [9, 'Ford Motor', 177210.0, 2024.0],
+            [10, 'ConocoPhillips', 166683.0, 13529.0],
+            [11, 'General Electric', 157153.0, 16353.0],
+            [12, 'Total', 152360.7, 15250.0],
+            [13, 'ING Group', 138235.3, 8958.9],
+            [14, 'Citigroup', 131045.0, 24589.0],
+            [15, 'AXA', 129839.2, 5186.5],
+            [16, 'Allianz', 121406.0, 5442.4],
+            [17, 'Volkswagen', 118376.6, 1391.7],
+            [18, 'Fortis', 112351.4, 4896.3],
+            [19, 'Crédit Agricole', 110764.6, 7434.3],
+            [20, 'American Intl. Group', 108905.0, 10477.0]
+        ];
 
-        var obj = { 
+        var obj = {
             numberCell:{resizable:true,title:"#",width:30,minWidth:30},
             editor: {type: 'textbox'},
+			freezeCols: 2,
+			pageModel: { type: "local", rPP: 10, strRpp: "{0}", strDisplay: "{0} to {1} of {2}" },
             title: "ParamQuery Grid with Array data",
             resizable:true,
             scrollModel:{autoFit:true, theme:true}
@@ -59,14 +82,83 @@
         obj.colModel = [
             { title: "Rank", width: 100, dataType: "integer" },
             { title: "Company", width: 200, dataType: "string" },
-            { title: "Revenues ($ millions)", width: 150, dataType: "float", align: "right" },
-            { title: "Profits ($ millions)", width: 150, dataType: "float", align: "right"}
+            { title: "Revenues ($ millions)", width: 150, dataType: "float", format: '$#,###.00 %' },
+            { title: "Profits ($ millions)", width: 150, dataType: "float", format: '$#,###.00 %'}
         ];
+
+		obj.toolbar = {
+            items: [
+                { type: 'button', label: 'validate', listeners: [{ click: validate}], icon: 'ui-icon-plus' },
+				{ type: 'button', label: 'rowspan', listeners: [{ click: rowspan}], icon: 'ui-icon-pencil' }
+            ]
+			};
         obj.dataModel = { data: data };
         $("#grid_array").pqGrid(obj);
     });
-        
-</script>    
+
+	function validate() {
+		var dataModel=$( "#grid_array" ).pqGrid( "option", "dataModel" ); 
+	
+		var errorCols = [
+			{cNum:1,msg:"Company"},
+			{cNum:2,msg:"Revenus"}
+		];
+	
+		if (gridValidator(dataModel,errorCols)) {
+			alert("ok");
+		};
+	}
+
+	// 사용법 dataModel, 검증 컬럼 항목
+	function gridValidator(dataModel,checkCol) {
+		console.log(checkCol);
+		console.log(checkCol.Length);
+		var keyCount = dataModel.data[1].length;
+		var errorCount = 0;
+		var errMessages = "";
+		for (var i=0; i<dataModel.data.length; i++)
+		{
+			for (k=0;k<checkCol.length ; k++) {
+				if (dataModel.data[i][checkCol[k].cNum]=="" || dataModel.data[i][checkCol[k].cNum]==undefined) {
+					$( '.pq-grid-row[pq-row-indx="'+i+'"] .pq-grid-cell[pq-col-indx="'+checkCol[k].cNum+'"]' ).addClass('errorStyle');
+					var test = '#pq-body-cell-u0-'+i+'-'+checkCol[k].cNum+'-left';
+					$( '#pq-body-cell-u0-'+i+'-'+checkCol[k].cNum+'-left,#pq-body-cell-u0-'+i+'-'+checkCol[k].cNum+'-right' ).addClass('errorStyle');
+				
+					errMessages = (errMessages=="") ? checkCol[k].msg : errMessages+","+checkCol[k].msg;
+					errorCount++;
+				}
+			}
+		}
+
+		if (errorCount>0) {
+			alertMsg = (errMessages=="") ?  "필수 입력항목을 입력하여주세요" : errMessages+" 항목들을 입력하여 주세요!";
+			alert(alertMsg);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	function rowspan() {
+
+		var colM = [{ title: "Rank1", width: 100, dataType: "integer" },
+		{ title: "Company2", width: 200, dataType: "string" },
+		{ title: "User Result",      align: "center",
+			   colModel:[
+				{ title: "Revenues ($ millions)", width: 150, dataType: "float", align: "right" },
+				{ title: "Profits ($ millions)", width: 150, dataType: "float", align: "right"}]
+		}];
+
+		pq.grid( $('#grid_array'), {colModel: colM});
+		$('#grid_array').pqGrid("refreshDataAndView");
+		
+	}
+
+	function deleteRow() {
+		alert("delete");
+	}
+
+</script>
 </head>
 <body>
 <div id="grid_array" style="margin:100px;"></div>

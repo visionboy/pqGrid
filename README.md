@@ -1,4 +1,4 @@
-jQuery grid plugin, also support Angular, Reactjs, Vuejs
+pqGrid plugin, also support Angular, Reactjs, Vuejs
 ========================================================
 [ParamQuery Grid](http://paramquery.com)
 
@@ -20,6 +20,14 @@ ParamQuery grid is a lightweight javascript grid for Angular, jQuery, Reactjs, V
 5. [Angularjs bindings](http://angularjsgrid.com)
 
 6. [Angularjs demos](http://angularjsgrid.com/demos)
+
+==index.html sample ==
+
+Add Button -> pqGrid Validattion 
+
+Uncomment #grid_array .pq-grid-top {display:none}  header 영역 숨기기 
+
+Edit Button-> colModel 수동 변경하기 추가
 
 
 ### Features:
